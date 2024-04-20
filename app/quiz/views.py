@@ -15,7 +15,11 @@ from app.web.utils import json_response
 
 
 class ThemeAddView(AuthRequiredMixin, View):
-    @docs(tags="Vk Quiz Bot", summary="Add new theme", description="Add new theme to database")
+    @docs(
+        tags="Vk Quiz Bot",
+        summary="Add new theme",
+        description="Add new theme to database",
+    )
     @request_schema(ThemeSchema)
     @response_schema(ThemeSchema)
     async def post(self):
@@ -27,7 +31,11 @@ class ThemeAddView(AuthRequiredMixin, View):
 
 
 class ThemeListView(AuthRequiredMixin, View):
-    @docs(tags="Vk Quiz Bot", summary="List themes", description="List themes from database")
+    @docs(
+        tags="Vk Quiz Bot",
+        summary="List themes",
+        description="List themes from database",
+    )
     @response_schema(ThemeListSchema)
     async def get(self):
         themes = await self.store.quizzes.list_themes()
@@ -36,7 +44,11 @@ class ThemeListView(AuthRequiredMixin, View):
 
 
 class QuestionAddView(AuthRequiredMixin, View):
-    @docs(tags="Vk Quiz Bot", summary="Add new question", description="Add new question to database")
+    @docs(
+        tags="Vk Quiz Bot",
+        summary="Add new question",
+        description="Add new question to database",
+    )
     @request_schema(QuestionSchema)
     @response_schema(QuestionSchema)
     async def post(self):
@@ -48,16 +60,31 @@ class QuestionAddView(AuthRequiredMixin, View):
             raise HTTPNotFound(reason="Theme with such id doesn't exists")
         answers = self.data["answers"]
         if len(answers) < 2:
-            raise HTTPBadRequest(reason="Incorrect format of answers to the question. Please check the accuracy of filling in the answer fields")
+            raise HTTPBadRequest(
+                reason="Incorrect format of answers to the question. Please check the accuracy of filling in the answer fields"
+            )
         correct_answers = [answer for answer in answers if answer["is_correct"]]
         if len(correct_answers) != 1:
-            raise HTTPBadRequest(reason="Incorrect format of answers to the question. Please check the accuracy of filling in the answer fields")
-        question = await self.store.quizzes.create_question(title=title, theme_id=theme_id, answers=[AnswerModel(title=answer["title"], is_correct=answer["is_correct"]) for answer in answers])
-        return json_response(data=QuestionSchema.dump(question))
+            raise HTTPBadRequest(
+                reason="Incorrect format of answers to the question. Please check the accuracy of filling in the answer fields"
+            )
+        question = await self.store.quizzes.create_question(
+            title=title,
+            theme_id=theme_id,
+            answers=[
+                AnswerModel(title=answer["title"], is_correct=answer["is_correct"])
+                for answer in answers
+            ],
+        )
+        return json_response(data=QuestionSchema().dump(question))
 
 
 class QuestionListView(AuthRequiredMixin, View):
-    @docs(tags="Vk Quiz Bot", summary="List questions", description="List questions from database")
+    @docs(
+        tags="Vk Quiz Bot",
+        summary="List questions",
+        description="List questions from database",
+    )
     @querystring_schema(ThemeIdSchema)
     @response_schema(ListQuestionSchema)
     async def get(self):

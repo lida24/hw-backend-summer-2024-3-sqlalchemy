@@ -1,6 +1,7 @@
 from collections.abc import Iterable, Sequence
 
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.base.base_accessor import BaseAccessor
 from app.quiz.models import (
@@ -66,7 +67,13 @@ class QuizAccessor(BaseAccessor):
     async def list_questions(
         self, theme_id: int | None = None
     ) -> Sequence[QuestionModel]:
-        query = select(QuestionModel) if not theme_id else select(QuestionModel).where(QuestionModel.theme_id == theme_id)
+        query = (
+            select(QuestionModel).options(selectinload(QuestionModel.answers))
+            if not theme_id
+            else select(QuestionModel)
+            .where(QuestionModel.theme_id == theme_id)
+            .options(selectinload(QuestionModel.answers))
+        )
 
         async with self.app.database.session() as session:
             questions: Sequence[QuestionModel] = await session.scalars(query)

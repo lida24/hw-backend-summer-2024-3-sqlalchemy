@@ -39,7 +39,9 @@ class QuestionModel(BaseModel):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    theme_id: Mapped[int] = mapped_column(ForeignKey("themes.id", ondelete="CASCADE"), nullable=False)
+    theme_id: Mapped[int] = mapped_column(
+        ForeignKey("themes.id", ondelete="CASCADE"), nullable=False
+    )
     answers: Mapped[List["AnswerModel"]] = relationship("AnswerModel")
 
 
@@ -49,4 +51,6 @@ class AnswerModel(BaseModel):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     is_correct: Mapped[bool]
-    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id", ondelete="CASCADE"), nullable=False)
+    question_id: Mapped[int] = mapped_column(
+        ForeignKey("questions.id", ondelete="CASCADE"), nullable=False
+    )
